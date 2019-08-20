@@ -15,4 +15,11 @@ class ShortenedUrl < ApplicationRecord
   def self.create!(user, long_url)
     ShortenedUrl.create(short_url: self.random_code, long_url: long_url, user_id: user.id)
   end
+
+  belongs_to :submitter,
+    class_name: 'User',
+    primary_key: :id,
+    foreign_key: :user_id
+
+  
 end
