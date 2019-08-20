@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: shortened_urls
+#
+#  id         :bigint           not null, primary key
+#  short_url  :string           not null
+#  long_url   :string           not null
+#  user_id    :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require 'securerandom'
 
 class ShortenedUrl < ApplicationRecord
@@ -27,6 +39,19 @@ class ShortenedUrl < ApplicationRecord
     foreign_key: :url_id
 
   has_many :visitors,
+    -> { distinct },
     through: :visits,
     source: :visitor
+
+  def num_clicks
+    self.visits.count
+  end
+
+  def num_uniques
+    self.visitors.count
+  end
+
+  def num_recent_uniques
+    self.visits.select(:visitor_id).distinct.where(created_at: 10.minutes.ago..Time.now).count
+  end
 end 
